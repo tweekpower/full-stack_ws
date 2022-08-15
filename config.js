@@ -9,6 +9,10 @@ const config = {
             logs: {
                 path: "./server/logs/debug.log"
             }
+        },
+        db: {
+            url: "mongodb://localhost:27017",
+            name: "test2"
         }
     }
 }

@@ -1,39 +1,38 @@
-const config = require("../config");
+const { createLogger, format, transports, addColors } = require('winston');
+const { combine, colorize, label, timestamp, printf } = format;
 
-const { createLogger, format, transports } = require('winston');
-const { combine, splat, timestamp, printf } = format;
-
-const myFormat = printf(({ level, message, timestamp, ...metadata }) => {
-  let msg = `${timestamp} [${level}] : ${message} `
-  if (metadata) {
-    msg += JSON.stringify(metadata)
-  }
-  return msg
-});
+let myCustomFormat = format.combine(
+  colorize({ all: true }),
+  label({ label: '[LOGGER]' }),
+  timestamp({ format: 'YY-MM-DD HH:MM:SS' }),
+  printf(
+    (info) =>
+      ` ${info.label} ${info.timestamp}  [${info.level}] : ${info.message}`
+  )
+);
 
 const myLevels = {
+  info: 0,
+  warn: 0,
   error: 0,
-  warn: 1,
-  info: 2,
-  http: 3,
-  ws: 4,
-  debug: 5
-};
+  debug: 0,
+  ws: 0,
+  http: 0,
+}
+
+addColors({
+  info: 'bold blue', // fontStyle color
+  warn: 'italic yellow',
+  error: 'bold red',
+  http: 'green',
+  debug: 'green',
+  ws: 'blue',
+});
+
 
 const logger = createLogger({
   levels: myLevels,
-  format: combine(
-    format.colorize(),
-    splat(),
-    timestamp(),
-    myFormat
-  ),
-  transports: [
-    new transports.File({
-      filename: 'error.log',
-      level: 'error'
-    })
-  ]
+  transports: [new transports.Console({ format: combine(myCustomFormat) })],
 });
 
 module.exports = logger
