@@ -1,11 +1,16 @@
 import logo from './logo.svg';
 import './App.css';
-import useSocket from './hooks/useSocket';
+import useCollection from './hooks/useCollection';
 
 function App() {
-  const socket = useSocket();
+  const [names] = useCollection("names");
   return (
     <div className="App">
+      {
+        names.map(
+          n => <p>{n.test}</p>
+        )
+      }
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
