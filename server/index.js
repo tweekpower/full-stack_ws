@@ -23,6 +23,4 @@ io.on('connection', (socket) => {
 
 server.listen(config.server.port, config.server.host, async () => {
     logger.info(`Server start listenning on ${config.server.host}:${config.server.port}`);
-    await db.init();
-    await db.add("names", "bitouze")
 });
