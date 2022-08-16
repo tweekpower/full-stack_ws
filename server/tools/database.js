@@ -1,29 +1,40 @@
 const config = require('../../config');
 const logger = require('./logger');
 
-var MongoClient = require('mongodb').MongoClient;
+const { MongoClient } = require("mongodb");
 
 module.exports = class Database {
     constructor() {
         this.db = undefined;
     }
     init = async () => {
+        const client = new MongoClient(config.db.url);
         try {
-            logger.info(`Trying to connect to ${config.db.url}/${config.db.name}`)
-            this.db = await MongoClient.connect(`${config.db.url}/${config.db.name}`);
-            logger.info(`MongoDb connected`);
+            this.db = client.db(config.db.name);
+            logger.info("Connected successfully to server");
         }
-        catch (err) {
-            logger.error(err);
-            console.log(err)
+        catch(err) {
+            logger.error("Database fail");
+            console.console.log(err);
+            await client.close();
         }
     }
-    add = async (collection, value) => {
+    addOne = async (collection, value) => {
         try {
-            logger.info(`Adding value to ${collection}`)
+            logger.info(`Adding value to ${collection}`);
             this.db.collection(collection).insertOne(value);
         }
         catch (err) {
+            logger.error(err);
+            console.log(err);
+        }
+    }
+    getAll = async (collection) => {
+        try {
+            logger.info(`get all values from ${collection}`);
+            return this.db.collection(collection).find({}).toArray();
+        }
+        catch(err) {
             logger.error(err);
             console.log(err)
         }
